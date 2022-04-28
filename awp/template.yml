@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Resources:
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: allowLambdaLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: arn:aws:logs:*:*:*
+        - PolicyName: allowSqs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
+                  - sqs:GetQueueAttributes
+                  - sqs:ChangeMessageVisibility
+                Resource: !GetAtt MyQueue.Arn
+        - PolicyName: allowSns
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sns:Publish
+                  - sns:Subscribe
+                  - sns:CreateTopic
+                  - sns:GetTopicAttributes
+                  - sns:SetTopicAttributes
+                  - sns:TagResource
+                  - sns:UntagResource
+                  - sns:ListTagsForResource
+                  - sns:ListSubscriptionsByTopic
+                Resource: arn:aws:sns:*:*:*
+  LambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: AWP-uploads-batch-notifier
+      Description: Java function
+      Runtime: java8
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Handler: com.epam.aws.awp.handler.ImageProcessHandler::handleRequest
+      MemorySize: 512
+      Timeout: 25
+      CodeUri: ./build/distributions/awp-1.0-SNAPSHOT.zip
+      PackageType: Zip
+
+  LambdaFunctionEventSourceMapping:
+    Type: AWS::Lambda::EventSourceMapping
+    Properties:
+      BatchSize: 10
+      MaximumBatchingWindowInSeconds: 60
+      Enabled: true
+      EventSourceArn: !GetAtt MyQueue.Arn
+      FunctionName: !GetAtt LambdaFunction.Arn
+
+  MyQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: "task10-uploads-notification-queue"
+      DelaySeconds: 0
+      VisibilityTimeout: 120
