@@ -7,7 +7,7 @@ phases:
   build:
     commands:
       - echo Build1 stated on date `date`
-      - gradle bildzip
+      - gradle buildZip
   post_build:
     commands:
       - echo Build1 completed on date `date`
