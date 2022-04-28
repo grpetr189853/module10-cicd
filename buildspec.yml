@@ -11,6 +11,6 @@ phases:
     commands:
       - echo Build1 completed on date `date`
       - aws cloudformation package --template-file template.yml --s3-bucket task10-grigory-petrenko --s3-prefix lambda-artifact --output-template-file package.yml
-  artifacts:
-    files:
-      - package.yml
+artifacts:
+  files:
+    - package.yml
