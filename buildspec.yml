@@ -1,16 +1,16 @@
 version: 0.2
 
 phases:
-	install:
-		runtime-versions: 
-			java: coretto8
-	build:
-		commands:
-			- echo Build1 stated on date `date`
-	post-build:
-		commands:
-			- echo Build1 completed on date `date`
-			- aws cloudformation package --template-file template.yml --s3-bucket task10-grigory-petrenko --s3-prefix lambda-artifact --output-template-file package.yml
-	artifacts:
-		files:
-			- package.yml
+  install:
+    runtime-versions:
+      java: coretto8
+  build:
+    commands:
+      - echo Build1 stated on date `date`
+  post-build:
+    commands:
+      - echo Build1 completed on date `date`
+      - aws cloudformation package --template-file template.yml --s3-bucket task10-grigory-petrenko --s3-prefix lambda-artifact --output-template-file package.yml
+  artifacts:
+    files:
+      - package.yml
