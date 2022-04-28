@@ -1,0 +1,37 @@
+plugins {
+    id 'java'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://plugins.gradle.org/m2/"
+    }
+}
+
+dependencies {
+    implementation group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.1004'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
+    implementation 'com.amazonaws:aws-lambda-java-core:1.2.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task buildZip(type: Zip) {
+    dirMode 0777
+    from compileJava
+    from processResources
+    into('lib') {
+        from configurations.runtimeClasspath
+    }
+}
