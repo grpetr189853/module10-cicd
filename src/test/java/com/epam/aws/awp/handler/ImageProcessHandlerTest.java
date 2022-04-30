@@ -19,13 +19,15 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.ArgumentMatchers.anyString;
 
-@RunWith(MockitoJUnitRunner.class)//without this runner - mocks would be "null"
+@RunWith(MockitoJUnitRunner.class)
 public class ImageProcessHandlerTest {
     private ImageProcessHandler handler;
     @Mock
     Context context;
     @Mock
     LambdaLogger loggerMock;
+    
+    String message;
 
     private static SQSEvent load(String fixture) {
         final ObjectMapper mapper = new ObjectMapper();
@@ -41,7 +43,7 @@ public class ImageProcessHandlerTest {
         when(context.getLogger()).thenReturn(loggerMock);
 
         doAnswer(call -> {
-            System.out.println((String) call.getArgument(0));//print to the console
+            message = call.getArgument(0);
             return null;
         }).when(loggerMock).log(anyString());
 
@@ -73,7 +75,7 @@ public class ImageProcessHandlerTest {
         APIGatewayProxyResponseEvent response = handler.handleRequest(sqsEvent, context);
         assertEquals(new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)
-                .withBody("")
+                .withBody(message)
                 .withIsBase64Encoded(false), response, "The Lambda function should return a welcome message");
     }
 }
