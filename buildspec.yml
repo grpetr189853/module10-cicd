@@ -4,10 +4,12 @@ phases:
   install:
     runtime-versions:
       java: corretto8
+  pre_build:
+    commands:
+      - gradle test --tests com.epam.aws.awp.handler.* --debug --stacktrace -i
   build:
     commands:
       - echo Build1 stated on date `date`
-      - gradle test --tests com.epam.aws.awp.handler.* --debug --stacktrace -i
       - gradle buildZip
   post_build:
     commands:
