@@ -43,7 +43,7 @@ public class ImageProcessHandlerTest {
         when(context.getLogger()).thenReturn(loggerMock);
 
         doAnswer(call -> {
-            message = call.getArgument(0);
+            System.out.println((String) call.getArgument(0));
             return null;
         }).when(loggerMock).log(anyString());
 
@@ -75,7 +75,8 @@ public class ImageProcessHandlerTest {
         APIGatewayProxyResponseEvent response = handler.handleRequest(sqsEvent, context);
         assertEquals(new APIGatewayProxyResponseEvent()
                 .withStatusCode(200)
-                .withBody(message)
+                .withBody(" Result message = \n" +
+                        "Hello from SQS!")
                 .withIsBase64Encoded(false), response, "The Lambda function should return a welcome message");
     }
 }
